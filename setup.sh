@@ -12,11 +12,56 @@ NC='\033[0m' # No Color
 echo -e "${BLUE}=== Amazon Q Enhanced Workflow Setup ===${NC}"
 echo ""
 
+# Check for required commands
+check_requirements() {
+    local missing_deps=0
+    
+    echo -e "${BLUE}Checking requirements...${NC}"
+    
+    # Check for jq
+    if ! command -v jq >/dev/null 2>&1; then
+        echo -e "${RED}Missing requirement: jq${NC}"
+        echo -e "${YELLOW}Please install jq:${NC}"
+        echo "  sudo apt-get install jq  # Debian/Ubuntu"
+        echo "  sudo yum install jq      # RHEL/CentOS"
+        echo "  brew install jq          # macOS"
+        missing_deps=1
+    fi
+    
+    # Check for curl
+    if ! command -v curl >/dev/null 2>&1; then
+        echo -e "${RED}Missing requirement: curl${NC}"
+        echo -e "${YELLOW}Please install curl:${NC}"
+        echo "  sudo apt-get install curl  # Debian/Ubuntu"
+        echo "  sudo yum install curl      # RHEL/CentOS"
+        echo "  brew install curl          # macOS"
+        missing_deps=1
+    fi
+    
+    # Check for Amazon Q CLI
+    if ! command -v q >/dev/null 2>&1; then
+        echo -e "${RED}Missing requirement: Amazon Q CLI${NC}"
+        echo -e "${YELLOW}Please install the Amazon Q CLI before continuing${NC}"
+        missing_deps=1
+    fi
+    
+    if [ $missing_deps -eq 1 ]; then
+        echo -e "${RED}Please install missing requirements and run setup again${NC}"
+        exit 1
+    fi
+    
+    echo -e "${GREEN}All requirements satisfied${NC}"
+    echo ""
+}
+
 # Configuration
 CONFIG_DIR="$HOME/.amazon-q-workflow"
 SCRIPTS_DIR="$CONFIG_DIR/scripts"
 DOCS_DIR="$CONFIG_DIR/docs"
 BIN_DIR="$HOME/.local/bin"
+
+# Check requirements first
+check_requirements
 
 # Create directories
 echo -e "${YELLOW}Creating configuration directories...${NC}"
@@ -30,12 +75,14 @@ echo -e "${YELLOW}Installing scripts...${NC}"
 cp -v ./scripts/q-workflow.sh "$SCRIPTS_DIR/"
 cp -v ./scripts/q-startup-check.sh "$SCRIPTS_DIR/"
 cp -v ./scripts/q-enhanced "$SCRIPTS_DIR/"
+cp -v ./scripts/installation-check.sh "$SCRIPTS_DIR/"
 chmod +x "$SCRIPTS_DIR"/*.sh "$SCRIPTS_DIR/q-enhanced"
 
 # Create symbolic links
 echo -e "${YELLOW}Creating symbolic links...${NC}"
 ln -sf "$SCRIPTS_DIR/q-workflow.sh" "$BIN_DIR/q-workflow"
 ln -sf "$SCRIPTS_DIR/q-enhanced" "$BIN_DIR/q-enhanced"
+ln -sf "$SCRIPTS_DIR/installation-check.sh" "$BIN_DIR/q-check-install"
 
 # Set up shell integration
 SHELL_RC="$HOME/.bashrc"
@@ -89,6 +136,16 @@ This file serves as a persistent memory for Amazon Q. When starting a new sessio
 EOF
 fi
 
+# Set up GitHub MCP if not already configured
+if [ ! -f "$HOME/.github-mcp/config.json" ]; then
+    echo -e "${YELLOW}Setting up GitHub MCP server...${NC}"
+    ./mcp-servers/github/register_github_mcp.sh
+fi
+
+# Run installation checklist
+echo -e "${BLUE}Running installation checklist...${NC}"
+"$SCRIPTS_DIR/installation-check.sh"
+
 echo ""
 echo -e "${GREEN}Setup complete!${NC}"
 echo ""
@@ -98,6 +155,9 @@ echo -e "   ${YELLOW}q${NC}"
 echo ""
 echo -e "2. Use workflow commands:"
 echo -e "   ${YELLOW}q-workflow help${NC}"
+echo ""
+echo -e "3. Check installation status:"
+echo -e "   ${YELLOW}q-check-install${NC}"
 echo ""
 echo -e "${YELLOW}Note: You may need to restart your shell or run 'source $SHELL_RC'${NC}"
 echo -e "${YELLOW}to use the 'q' command with the enhanced features.${NC}"
