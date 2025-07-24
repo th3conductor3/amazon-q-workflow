@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Enhanced Amazon Q CLI launcher
+# This script runs the startup checklist and then launches Amazon Q
+
+# Run the startup checklist
+"$(dirname "$0")/q-startup-check.sh"
+
+# Start Amazon Q
+q "$@"
