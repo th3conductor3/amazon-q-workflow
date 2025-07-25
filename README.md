@@ -13,6 +13,8 @@ This repository provides tools to solve common limitations with AI assistants:
 
 ## Quick Start
 
+### Standard Installation
+
 1. Clone this repository:
    ```bash
    git clone https://github.com/th3conductor3/amazon-q-workflow.git
@@ -24,26 +26,54 @@ This repository provides tools to solve common limitations with AI assistants:
    ./setup.sh
    ```
 
-3. (Optional) Set up GitHub integration:
+### Global Installation (Recommended)
+
+For a system-wide installation that works for all users and terminals:
+
+1. Clone and enter the repository:
    ```bash
-   ./mcp-servers/github/register_github_mcp.sh
-   ./mcp-servers/github/github_mcp.sh setup
+   git clone https://github.com/th3conductor3/amazon-q-workflow.git
+   cd amazon-q-workflow
    ```
 
-4. Start using the enhanced workflow:
+2. Run the global installer:
    ```bash
-   # Log a new project
-   ./scripts/q-workflow.sh project "Project Name" "Description"
-   
-   # Use Amazon Q with memory context
-   ./scripts/q-workflow.sh start-q
-   
-   # Use Gemini (if available)
-   gemini
-   
-   # View your project history
-   ./scripts/q-workflow.sh memory
+   sudo ./scripts/global-installer.sh
    ```
+
+3. Restart your terminal or reload your shell configuration:
+   ```bash
+   source ~/.bashrc  # or ~/.zshrc
+   ```
+
+### Setting Up GitHub Integration
+
+After installation, set up GitHub integration:
+```bash
+./mcp-servers/github/register_github_mcp.sh
+./mcp-servers/github/github_mcp.sh setup
+```
+
+### Start Using Enhanced Workflow
+
+The enhanced workflow provides a startup checklist showing:
+1. GitHub integration status
+2. Recent activity log
+3. Available documentation
+
+```bash
+# Start Amazon Q with enhanced features
+q
+
+# Log a new project
+q-workflow project "Project Name" "Description"
+
+# View your project history
+q-workflow memory
+
+# Get help with commands
+q-workflow help
+```
 
 ## Features
 
