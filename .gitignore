@@ -18,3 +18,12 @@ user-config.json
 
 # Test files
 test/temp/
+
+# Secrets and sensitive data
+**/secrets/
+*workflow_secrets*.md
+.env
+*.key
+*.pem
+credentials.json
+token.json
